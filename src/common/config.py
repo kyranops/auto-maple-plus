@@ -43,3 +43,49 @@ listener = None
 
 # Shares the gui to all modules
 gui = None
+
+# Shares the webhook to all modules
+webhook = None
+
+
+##############################
+#       Watcher Flags        #
+##############################
+# Describes whether rune cool down in cooling down
+rune_cd = False
+
+# Cursed rune appeared
+cursed_rune = False
+
+# No damage numbers
+no_damage_numbers = False
+
+# Map overcrowded
+map_overcrowded = False
+
+# Violetta minigame
+violetta_minigame = False
+
+# Lie detector failed
+lie_detector_failed = False
+
+# Game disconnected
+game_disconnected = False
+
+# Character dead
+character_dead = False
+
+# Describes whether white (GM/Other user chat) detected in chat box
+chatbox_msg = False
+
+# Inside cashshop for extended period
+stuck_in_cs = False
+
+# Player not moving
+player_stuck = False
+
+# Polo portal
+polo_portal = False
+
+#Especia portal
+especia_portal = False

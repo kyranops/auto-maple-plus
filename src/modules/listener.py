@@ -11,7 +11,8 @@ from datetime import datetime
 
 class Listener(Configurable):
     DEFAULT_CONFIG = {
-        'Start/stop': 'insert',
+        'Start/stop': 'f4',
+        'Recalibrate Minimap': 'f5',
         'Reload routine': 'f6',
         'Record position': 'f7'
     }
@@ -49,6 +50,8 @@ class Listener(Configurable):
             if self.enabled:
                 if kb.is_pressed(self.config['Start/stop']):
                     Listener.toggle_enabled()
+                elif kb.is_pressed(self.config['Recalibrate Minimap']):
+                    Listener.recalibrate_minimap()
                 elif kb.is_pressed(self.config['Reload routine']):
                     Listener.reload_routine()
                 elif self.restricted_pressed('Record position'):

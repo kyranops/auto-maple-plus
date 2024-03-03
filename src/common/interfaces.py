@@ -32,3 +32,10 @@ class Configurable:
             os.makedirs(directory)
         with open(path, 'wb') as file:
             pickle.dump(self.config, file)
+
+    def get(self, key):
+        return self.config[key]
+
+    def set(self, key, value):
+        assert key in self.config
+        self.config[key] = value

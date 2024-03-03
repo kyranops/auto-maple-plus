@@ -4,6 +4,7 @@ import time
 from src.modules.bot import Bot
 from src.modules.capture import Capture
 from src.modules.notifier import Notifier
+from src.modules.watcher import Watcher
 from src.modules.listener import Listener
 from src.modules.gui import GUI
 
@@ -12,6 +13,7 @@ bot = Bot()
 capture = Capture()
 notifier = Notifier()
 listener = Listener()
+watcher = Watcher()
 
 bot.start()
 while not bot.ready:
@@ -23,6 +25,10 @@ while not capture.ready:
 
 notifier.start()
 while not notifier.ready:
+    time.sleep(0.01)
+
+watcher.start()
+while not watcher.ready:
     time.sleep(0.01)
 
 listener.start()

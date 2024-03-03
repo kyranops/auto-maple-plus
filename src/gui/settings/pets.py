@@ -48,10 +48,3 @@ class PetSettings(Configurable):
         'Auto-feed': False,
         'Num pets': 1
     }
-
-    def get(self, key):
-        return self.config[key]
-
-    def set(self, key, value):
-        assert key in self.config
-        self.config[key] = value

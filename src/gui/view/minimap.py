@@ -1,5 +1,6 @@
 import cv2
 import tkinter as tk
+from tkinter.font import Font
 from PIL import ImageTk, Image
 from src.gui.interfaces import LabelFrame
 from src.common import config, utils
@@ -16,6 +17,11 @@ class Minimap(LabelFrame):
                                 width=self.WIDTH, height=self.HEIGHT,
                                 borderwidth=0, highlightthickness=0)
         self.canvas.pack(expand=True, fill='both', padx=5, pady=5)
+        minimap_desc = tk.Label(self, 
+                                text="Recalibrate minimap if not properly displayed",
+                                font=(Font(family="TkDefaultFont",size=6,slant="italic"))
+                                )
+        minimap_desc.pack()
         self.container = None
 
     def display_minimap(self):

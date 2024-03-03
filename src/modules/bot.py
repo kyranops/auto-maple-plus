@@ -7,15 +7,17 @@ import cv2
 import inspect
 import importlib
 import traceback
+from interception import press
 from os.path import splitext, basename
 from src.common import config, utils
-from src.detection import detection
 from src.routine import components
 from src.routine.routine import Routine
 from src.command_book.command_book import CommandBook
 from src.routine.components import Point
-from src.common.vkeys import press, click
 from src.common.interfaces import Configurable
+from src.runesolvercore.runesolver import enterCashshop
+from src.runesolvercore.runesolver import solve_rune_raw
+
 
 
 # The rune's buff icon
@@ -26,8 +28,14 @@ class Bot(Configurable):
     """A class that interprets and executes user-defined routines."""
 
     DEFAULT_CONFIG = {
-        'Interact': 'y',
-        'Feed pet': '9'
+        'NPC/Gather': 'y',
+        'Feed pet': '9',
+        'Cash Shop': '`',
+        '2x EXP Buff': '7',
+        'Mushroom Buff': '8',
+        'Additional EXP Buff': '9',
+        'Gold Pot': '10',
+        'Wealth Acquisition': '-'
     }
 
     def __init__(self):
@@ -51,6 +59,8 @@ class Bot(Configurable):
 
         config.routine = Routine()
 
+        self.hwnd = None
+
         self.ready = False
         self.thread = threading.Thread(target=self._main)
         self.thread.daemon = True
@@ -70,14 +80,12 @@ class Bot(Configurable):
         The main body of Bot that executes the user's routine.
         :return:    None
         """
-
-        print('\n[~] Initializing detection algorithm:\n')
-        model = detection.load_model()
-        print('\n[~] Initialized detection algorithm')
-
         self.ready = True
         config.listener.enabled = True
         last_fed = time.time()
+        last_enteredCS = time.time()
+        last_30m_expbuffed = None
+        
         while True:
             if config.enabled and len(config.routine) > 0:
                 # Buff and feed pets
@@ -85,10 +93,63 @@ class Bot(Configurable):
                 pet_settings = config.gui.settings.pets
                 auto_feed = pet_settings.auto_feed.get()
                 num_pets = pet_settings.num_pets.get()
+
+                # EXP Buff settings
+                exp_buff_settings = config.gui.settings.expbuffsettings
+                auto_buff_exp = exp_buff_settings.expbuff_use_toggle.get()
+                expbuff_use_interval = exp_buff_settings.expbuff_use_interval.get()
+
+                # CS reset settings
+                misc_settings = config.gui.settings.miscsettings
+                cs_reset_toggle = misc_settings.cs_reset_toggle.get()
+                cs_reset_interval = misc_settings.cs_reset_interval.get()
+
+                #feed pets
                 now = time.time()
                 if auto_feed and now - last_fed > 1200 / num_pets:
                     press(self.config['Feed pet'], 1)
                     last_fed = now
+
+                #buff exp buff
+                if auto_buff_exp:
+                    if last_30m_expbuffed == None:
+                        press(self.config['2x EXP Buff'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Mushroom Buff'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Additional EXP Buff'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Gold Pot'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Wealth Acquisition'], 1)
+                        time.sleep(0.2)
+                        last_30m_expbuffed = now
+                    config.gui.view.monitoringconsole.set_nextexpbuffstat(str(round((expbuff_use_interval*900 - (now - last_30m_expbuffed))))+"s")
+                    if now - last_30m_expbuffed > expbuff_use_interval*900:
+                        press(self.config['2x EXP Buff'], 1)
+                        time.sleep(0.2)
+                    if now - last_30m_expbuffed > 1800:
+                        press(self.config['Mushroom Buff'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Additional EXP Buff'], 1)
+                        time.sleep(0.2)
+                        press(self.config['Gold Pot'], 1)
+                        time.sleep(0.2)
+                    if now - last_30m_expbuffed > 7200:
+                        press(self.config['Wealth Acquisition'], 1)
+                        time.sleep(0.2)
+                        last_30m_expbuffed = now
+                elif auto_buff_exp == False:
+                    config.gui.view.monitoringconsole.set_nextexpbuffstat("Disabled")
+
+                # Enter cash shop to reset DC timer
+                config.gui.view.monitoringconsole.set_nextcsresetstat(str(round((cs_reset_interval*3600 - (now - last_enteredCS))))+"s")
+                if cs_reset_toggle and now - last_enteredCS > cs_reset_interval*3600:
+                    print("Entering cash shop for reset")
+                    enterCashshop(self)
+                    last_enteredCS = now
+                elif cs_reset_toggle == False:
+                    config.gui.view.monitoringconsole.set_nextcsresetstat("Disabled")
 
                 # Highlight the current Point
                 config.gui.view.routine.select(config.routine.index)
@@ -96,59 +157,32 @@ class Bot(Configurable):
 
                 # Execute next Point in the routine
                 element = config.routine[config.routine.index]
-                if self.rune_active and isinstance(element, Point) \
-                        and element.location == self.rune_closest_pos:
-                    self._solve_rune(model)
+                if config.rune_cd == False:
+                    if self.rune_active and isinstance(element, Point) \
+                            and element.location == self.rune_closest_pos:
+                        self._solve_rune()
                 element.execute()
                 config.routine.step()
             else:
                 time.sleep(0.01)
 
     @utils.run_if_enabled
-    def _solve_rune(self, model):
+    def _solve_rune(self):
         """
         Moves to the position of the rune and solves the arrow-key puzzle.
         :param model:   The TensorFlow model to classify with.
         :param sct:     The mss instance object with which to take screenshots.
         :return:        None
         """
-
+        
         move = self.command_book['move']
         move(*self.rune_pos).execute()
         adjust = self.command_book['adjust']
         adjust(*self.rune_pos).execute()
         time.sleep(0.2)
-        press(self.config['Interact'], 1, down_time=0.2)        # Inherited from Configurable
-
         print('\nSolving rune:')
-        inferences = []
-        for _ in range(15):
-            frame = config.capture.frame
-            solution = detection.merge_detection(model, frame)
-            if solution:
-                print(', '.join(solution))
-                if solution in inferences:
-                    print('Solution found, entering result')
-                    for arrow in solution:
-                        press(arrow, 1, down_time=0.1)
-                    time.sleep(1)
-                    for _ in range(3):
-                        time.sleep(0.3)
-                        frame = config.capture.frame
-                        rune_buff = utils.multi_match(frame[:frame.shape[0] // 8, :],
-                                                      RUNE_BUFF_TEMPLATE,
-                                                      threshold=0.9)
-                        if rune_buff:
-                            rune_buff_pos = min(rune_buff, key=lambda p: p[0])
-                            target = (
-                                round(rune_buff_pos[0] + config.capture.window['left']),
-                                round(rune_buff_pos[1] + config.capture.window['top'])
-                            )
-                            click(target, button='right')
-                    self.rune_active = False
-                    break
-                elif len(solution) == 4:
-                    inferences.append(solution)
+        solve_rune_raw(self)
+        self.rune_active = False
 
     def load_commands(self, file):
         try:

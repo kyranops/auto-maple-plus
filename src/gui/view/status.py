@@ -1,5 +1,6 @@
 import tkinter as tk
 from src.gui.interfaces import LabelFrame
+import sys
 
 
 class Status(LabelFrame):
@@ -23,6 +24,7 @@ class Status(LabelFrame):
         self.r_entry.grid(row=1, column=2, padx=(0, 5), pady=(0, 5), sticky=tk.EW)
 
     def set_cb(self, string):
+        print(sys._getframe().f_back.f_code.co_name)
         self.curr_cb.set(string)
 
     def set_routine(self, string):

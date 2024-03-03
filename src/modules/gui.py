@@ -5,14 +5,16 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 from src.common import config, settings
-from src.gui import Menu, View, Edit, Settings
+from src.gui import Menu, View, Edit, Settings, Notifer_Settings, Runtime_Flags
 
 
 class GUI:
     DISPLAY_FRAME_RATE = 30
     RESOLUTIONS = {
         'DEFAULT': '800x800',
-        'Edit': '1400x800'
+        'Edit': '1400x800',
+        'Settings': '800x850',
+        'Monitoring Console': '450x550'
     }
 
     def __init__(self):
@@ -37,6 +39,8 @@ class GUI:
         self.view = View(self.navigation)
         self.edit = Edit(self.navigation)
         self.settings = Settings(self.navigation)
+        self.watcher_settings = Notifer_Settings(self.navigation)
+        self.runtime_console = Runtime_Flags(self.navigation)
 
         self.navigation.pack(expand=True, fill='both')
         self.navigation.bind('<<NotebookTabChanged>>', self._resize_window)
