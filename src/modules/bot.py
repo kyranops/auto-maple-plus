@@ -135,6 +135,7 @@ class Bot(Configurable):
                         time.sleep(0.2)
                         press(self.config['Gold Pot'], 1)
                         time.sleep(0.2)
+                        last_30m_expbuffed = now
                     if now - last_30m_expbuffed > 7200:
                         press(self.config['Wealth Acquisition'], 1)
                         time.sleep(0.2)
