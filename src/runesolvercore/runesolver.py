@@ -1,5 +1,4 @@
 import time
-import logging
 import src.runesolvercore.gdi_capture as gdi_capture
 from interception import press
 import numpy as np
@@ -140,6 +139,7 @@ def locate(self, *color):
                     count += 1
                 if count > 0:
                     x_pos = sum_x / count
+        
                     y_pos = sum_y / count
                     locations.append((x_pos, y_pos))
         return locations
@@ -149,20 +149,24 @@ def get_rune_location(self):
     return location[0] if len(location) > 0 else None
 
 def enterCashshop(self):
-    frame = config.capture.frame #entire screen
     print("Entering Cashshop..")
     cashShopKey = self.config['Cash Shop']
     press(cashShopKey, 1)
     time.sleep(2)
-    while utils.single_match(frame,INSIDE_CS_TEMPLATE) == None or utils.single_match(frame,CS_FAIL_TEMPLATE) != None:
+    while utils.multi_match(config.capture.frame,INSIDE_CS_TEMPLATE,threshold=0.9) == [] or utils.multi_match(config.capture.frame,CS_FAIL_TEMPLATE,threshold=0.9) != []:
+        if config.enabled == False:
+            return True
+        print("Inside CS: {}".format(utils.multi_match(config.capture.frame,INSIDE_CS_TEMPLATE, threshold=0.8)))
+        print("CS Fail: {}".format(utils.multi_match(config.capture.frame,INSIDE_CS_TEMPLATE, threshold=0.8)))
         print("Fail to enter cash shop, trying again")
         press("esc" ,1)
         time.sleep(0.5)
         press(cashShopKey, 1)
         time.sleep(2)
-    logging.error("Trying to wait until...")
     print("Exiting Cashshop")
-    while utils.single_match(frame,INSIDE_CS_TEMPLATE) != None:
+    while utils.multi_match(config.capture.frame,INSIDE_CS_TEMPLATE,threshold=0.9) != []:
+        if config.enabled == False:
+            return True
         press("esc", 1)
         time.sleep(0.5)
         press("esc", 1)
@@ -177,7 +181,7 @@ def get_rune_image(win):
 def solve_rune_raw(self):
     #assumes user is already at rune
     attempts = 0
-    while attempts <= 3:
+    while attempts <= 3 and config.enabled == True:
         npcChatKey = self.config['NPC/Gather']
         press(npcChatKey, 1)
         time.sleep(2)
@@ -206,3 +210,4 @@ def solve_rune_raw(self):
                 attempts = 0
                 time.sleep(0.5)
                 return False
+    return False
