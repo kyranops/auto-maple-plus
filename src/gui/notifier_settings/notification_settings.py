@@ -8,6 +8,8 @@ class Notification_Settings(LabelFrame):
        
         #Initialise variable
         self.notification_setting_root = NotificationSetting('Notification Settings')
+        self.botrunningNotice = tk.StringVar(value=self.notification_setting_root.get("bot_running_notice"))
+        self.botrunningToggle = tk.BooleanVar(value=self.notification_setting_root.get("bot_running_toggle"))
         self.cursedruneNotice = tk.StringVar(value=self.notification_setting_root.get("cursed_rune_notice"))
         self.cursedruneToggle = tk.BooleanVar(value=self.notification_setting_root.get("cursed_rune_toggle"))
         self.NoDmgNotice = tk.StringVar(value=self.notification_setting_root.get("no_damage_numbers_notice"))
@@ -40,12 +42,22 @@ class Notification_Settings(LabelFrame):
 
         tk.Checkbutton(
             self,
+            variable=self.botrunningToggle,
+            text="Bot Running Normally",
+            command=self._on_change
+        ).grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        n1 = tk.Entry(self, textvariable=self.botrunningNotice)
+        n1.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n1.bind("<KeyRelease>",self._on_change)
+
+        tk.Checkbutton(
+            self,
             variable=self.cursedruneToggle,
             text="Cursed Rune",
             command=self._on_change
-        ).grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
         n1 = tk.Entry(self, textvariable=self.cursedruneNotice)
-        n1.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n1.grid(row=2, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n1.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -53,9 +65,9 @@ class Notification_Settings(LabelFrame):
             variable=self.NoDmgToggle,
             text="No Damage Detected",
             command=self._on_change
-        ).grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=3, column=0, sticky=tk.W, padx=5, pady=5)
         n2 = tk.Entry(self, textvariable=self.NoDmgNotice)
-        n2.grid(row=2, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n2.grid(row=3, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n2.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -63,9 +75,9 @@ class Notification_Settings(LabelFrame):
             variable=self.overcrowdToggle,
             text="Map Overcrowded",
             command=self._on_change
-        ).grid(row=3, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
         n3=tk.Entry(self, textvariable=self.overcrowdNotice)
-        n3.grid(row=3, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n3.grid(row=4, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n3.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -73,9 +85,9 @@ class Notification_Settings(LabelFrame):
             variable=self.LDfailToggle,
             text="Lie Detector Failed",
             command=self._on_change
-        ).grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=5, column=0, sticky=tk.W, padx=5, pady=5)
         n4=tk.Entry(self, textvariable=self.LDfailNotice)
-        n4.grid(row=4, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n4.grid(row=5, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n4.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -83,9 +95,9 @@ class Notification_Settings(LabelFrame):
             variable=self.DCToggle,
             text="Maplestory Disconnected",
             command=self._on_change
-        ).grid(row=5, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=6, column=0, sticky=tk.W, padx=5, pady=5)
         n5=tk.Entry(self, textvariable=self.DCNotice)
-        n5.grid(row=5, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n5.grid(row=6, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n5.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -93,9 +105,9 @@ class Notification_Settings(LabelFrame):
             variable=self.deadToggle,
             text="Character Dead",
             command=self._on_change
-        ).grid(row=6, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=7, column=0, sticky=tk.W, padx=5, pady=5)
         n6=tk.Entry(self, textvariable=self.deadNotice)
-        n6.grid(row=6, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n6.grid(row=7, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n5.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -103,9 +115,9 @@ class Notification_Settings(LabelFrame):
             variable=self.chatToggle,
             text="Message Detected",
             command=self._on_change
-        ).grid(row=7, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=8, column=0, sticky=tk.W, padx=5, pady=5)
         n7=tk.Entry(self, textvariable=self.chatNotice)
-        n7.grid(row=7, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n7.grid(row=8, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n7.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -113,9 +125,9 @@ class Notification_Settings(LabelFrame):
             variable=self.stuckInCSToggle,
             text="Stuck in Cash Shop",
             command=self._on_change
-        ).grid(row=8, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=9, column=0, sticky=tk.W, padx=5, pady=5)
         n8=tk.Entry(self, textvariable=self.stuckInCSNotice)
-        n8.grid(row=8, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n8.grid(row=9, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n8.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -123,9 +135,9 @@ class Notification_Settings(LabelFrame):
             variable=self.playerStuckToggle,
             text="Character Stuck",
             command=self._on_change
-        ).grid(row=9, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=10, column=0, sticky=tk.W, padx=5, pady=5)
         n9=tk.Entry(self, textvariable=self.playerStuckNotice)
-        n9.grid(row=9, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n9.grid(row=10, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n9.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
@@ -133,9 +145,9 @@ class Notification_Settings(LabelFrame):
             variable=self.playerEspeciaToggle,
             text="Especia Portal",
             command=self._on_change
-        ).grid(row=10, column=0, sticky=tk.W, padx=5, pady=5)
+        ).grid(row=11, column=0, sticky=tk.W, padx=5, pady=5)
         n9=tk.Entry(self, textvariable=self.playerEspeciaNotice)
-        n9.grid(row=10, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n9.grid(row=11, column=1, sticky=tk.NSEW, padx=5, pady=5)
         n9.bind("<KeyRelease>",self._on_change)
 
         muteAll_check = tk.Checkbutton(
@@ -147,6 +159,8 @@ class Notification_Settings(LabelFrame):
         muteAll_check.grid(column=0, columnspan=2)
 
     def _on_change(self, *args):
+        self.notification_setting_root.set('bot_running_notice', self.botrunningNotice.get())
+        self.notification_setting_root.set('bot_running_toggle', self.botrunningToggle.get())
         self.notification_setting_root.set('cursed_rune_notice', self.cursedruneNotice.get())
         self.notification_setting_root.set('cursed_rune_toggle', self.cursedruneToggle.get())
         self.notification_setting_root.set('no_damage_numbers_notice', self.NoDmgNotice.get())
@@ -173,6 +187,8 @@ class Notification_Settings(LabelFrame):
 
 class NotificationSetting(Configurable):
     DEFAULT_CONFIG = {
+        'bot_running_notice': 'NULL',
+        'bot_running_toggle': False,        
         'cursed_rune_notice': 'NULL',
         'cursed_rune_toggle': False,
         'no_damage_numbers_notice': 'NULL',

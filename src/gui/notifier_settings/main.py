@@ -7,7 +7,7 @@ import datetime
 
 class Notifier_Settings(Tab):
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, 'Notifier Settings', **kwargs)
+        super().__init__(parent, 'Notifier', **kwargs)
 
         self.noti_target = Notification_Target(self)
         self.noti_target.pack(fill=tk.BOTH ,padx=5,pady=5)

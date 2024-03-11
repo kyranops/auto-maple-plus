@@ -5,7 +5,7 @@ from src.common.interfaces import Configurable
 
 class Runtime_Flags(Tab):
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, 'Monitoring Console', **kwargs)
+        super().__init__(parent, 'Monitoring', **kwargs)
 
         self.runtimeFlags = Runtime_Flags_Frame(self)
         self.runtimeFlags.pack(fill=tk.BOTH, padx=5,pady=5)

@@ -11,7 +11,7 @@ from src.common import config
 
 class Settings(Tab):
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, 'Game Settings', **kwargs)
+        super().__init__(parent, 'Settings', **kwargs)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(3, weight=1)

@@ -35,6 +35,9 @@ ELITE_TEMPLATE = cv2.imread('assets/elite_template.jpg', 0)
 RUNE_CD1_TEMPLATE = cv2.imread('assets/runeCD.png', 0)
 RUNE_CD2_TEMPLATE = cv2.imread('assets/runeCD2.png', 0)
 
+# EXP Text as Chat Anchor
+CHAT_ANCHOR = cv2.imread('assets/exp.png',0)
+
 
 def get_alert_path(name):
     return os.path.join(Watcher.ALERTS_DIR, f'{name}.mp3')
@@ -66,6 +69,7 @@ class Watcher:
         for scanEntry in std:
             detectionTable[scanEntry] = ""
         sts = watcher_scan_table.scan_table_static
+        charLocation_Last = None
 
         while True:
             if config.enabled:
@@ -144,9 +148,11 @@ class Watcher:
                             setattr(config,flagname,False)
 
                 #scan for chat
-                chatAnchor = pyautogui.locateOnScreen("assets/"+sts["ChatDetection"]["ImgName"],confidence=0.9)
-                if chatAnchor != None:
-                    pyautogui.screenshot("assets/chat.png",region=(chatAnchor[0]+5,chatAnchor[1]-60,390,50))
+                CA_TopLeft, CA_TopRight = utils.single_match(frame=frame,template=CHAT_ANCHOR)
+                if CA_TopLeft != None:
+
+                    #step to screenshot, high chance to fail due to pyautogui bug?
+                    pyautogui.screenshot("assets/chat.png",region=(CA_TopLeft[0]+5,CA_TopLeft[1]-60,390,50))
                     img = cv2.imread("assets/chat.png")
 
                     #remove specifically achievements mega
@@ -164,6 +170,17 @@ class Watcher:
                         config.chatbox_msg = False
                 else:
                     pass
+
+                #scan for stationary
+                if charLocation_Last == None:
+                    charLocation_Last = config.player_pos
+                    charLocation_Time = datetime.now()
+                if charLocation_Last != config.player_pos:
+                    charLocation_Last = config.player_pos
+                    charLocation_Time = datetime.now()
+                    setattr(config,"player_stuck",False)
+                if config.player_pos == charLocation_Last and (datetime.now()-charLocation_Time).total_seconds() > 15:
+                    setattr(config,"player_stuck",True)
 
                 config.gui.runtime_console.runtimeFlags.update_All_Flags()
             time.sleep(0.05)

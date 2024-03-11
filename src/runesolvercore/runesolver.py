@@ -1,12 +1,16 @@
 import time
-import pyautogui
 import logging
 import src.runesolvercore.gdi_capture as gdi_capture
 from interception import press
 import numpy as np
 import cv2 as cv
+import src.common.utils as utils
+import src.common.config as config
 
+# DEFINE CV Variables
 RUNE_BGRA = (255, 102, 221, 255)
+INSIDE_CS_TEMPLATE = cv.imread('assets/insidecashshop.png', 0)
+CS_FAIL_TEMPLATE = cv.imread('assets/csFail.png',0)
 
 def find_arrow_directions(img, debug=False):
     bgr = cv.cvtColor(img, cv.COLOR_BGRA2BGR)
@@ -145,11 +149,12 @@ def get_rune_location(self):
     return location[0] if len(location) > 0 else None
 
 def enterCashshop(self):
+    frame = config.capture.frame #entire screen
     print("Entering Cashshop..")
     cashShopKey = self.config['Cash Shop']
     press(cashShopKey, 1)
     time.sleep(2)
-    while pyautogui.locateOnScreen("assets/insidecashshop.png",confidence=0.9) == None or pyautogui.locateOnScreen("assets/csFail.png",confidence=0.9) != None:
+    while utils.single_match(frame,INSIDE_CS_TEMPLATE) == None or utils.single_match(frame,CS_FAIL_TEMPLATE) != None:
         print("Fail to enter cash shop, trying again")
         press("esc" ,1)
         time.sleep(0.5)
@@ -157,7 +162,7 @@ def enterCashshop(self):
         time.sleep(2)
     logging.error("Trying to wait until...")
     print("Exiting Cashshop")
-    while pyautogui.locateOnScreen("assets/insidecashshop.png",confidence=0.9) != None:
+    while utils.single_match(frame,INSIDE_CS_TEMPLATE) != None:
         press("esc", 1)
         time.sleep(0.5)
         press("esc", 1)

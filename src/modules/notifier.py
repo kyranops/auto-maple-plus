@@ -7,6 +7,9 @@ import pytz
 from src.gui.notifier_settings.main import NotifSettings
 from src.gui.notifier_settings.notification_settings import NotificationSetting
 import src.common.config as config
+import pyautogui
+import cv2
+from pathlib import Path
 
 class Notifier:
     def __init__(self):
@@ -22,9 +25,13 @@ class Notifier:
     def _main(self):
         self.ready = True
         self.lastAlertTimeDict = {}
-        self.watchlist = {}
-        config.webhook = SyncWebhook.from_url(NotifSettings('Notifier Settings').get('WebhookURL'))
-        user_timezone = pytz.timezone(NotifSettings('Notifier Settings').get('Timezone'))
+        self.watchlist = {} 
+        try:
+            config.webhook = SyncWebhook.from_url(NotifSettings('Notifier Settings').get('WebhookURL'))
+            user_timezone = pytz.timezone(NotifSettings('Notifier Settings').get('Timezone'))
+        except:
+            print("Discord Webhook URL or Timezone invalid, notifier disabled")
+            return
         flaglist = ["cursed_rune", 
                         "no_damage_numbers", 
                         "map_overcrowded", 
@@ -38,18 +45,30 @@ class Notifier:
                         ]
 
         while True:
-            for i in flaglist:
-                self.watchlist[i] = {"toggle":NotificationSetting('Notification Settings').get(i+"_toggle"),
-                                        "msg":NotificationSetting('Notification Settings').get(i+"_notice")
-                                        }
-            if config.enabled:
+            #try except to prevent crashing when user is editing while trying to load configs
+            try:
+                suppressAll = NotificationSetting('Notification Settings').get("Suppress_All")
+                alertForBotRunning = NotificationSetting('Notification Settings').get("bot_running_toggle")
+                for i in flaglist:
+                    self.watchlist[i] = {"toggle":NotificationSetting('Notification Settings').get(i+"_toggle"),
+                                            "msg":NotificationSetting('Notification Settings').get(i+"_notice")
+                                            }
+            except:
+                pass
+            
+            if config.enabled and suppressAll != True:
+                if alertForBotRunning:
+                    alertTextForRunning = NotificationSetting('Notification Settings').get("bot_running_notice")
+                    self.alert(config.webhook, user_timezone, self.lastAlertTimeDict, alertTextForRunning, alertCD=300)
                 for item in self.watchlist:
                     if getattr(config,item) == True:
                         if self.watchlist[item]["toggle"] == True:
-                            self.alert(config.webhook, user_timezone, self.lastAlertTimeDict, self.watchlist[item]["msg"])
+                            alertSent = self.alert(config.webhook, user_timezone, self.lastAlertTimeDict, self.watchlist[item]["msg"])
+                            if item == "chatbox_msg" and alertSent:
+                                    self.alertFile(target=config.webhook, image="assets\chat.png")
             time.sleep(1)
     
-    def alert(self,target, timezone, alertDict, alertText: str):
+    def alert(self,target, timezone, alertDict, alertText: str, alertCD = 60):
         """
         Core notification sending engine that manages send frequency
         """
@@ -57,14 +76,21 @@ class Notifier:
         
         if alertText in alertDict:
             lastAlertSeconds = (datetime.now() - alertDict[alertText]).total_seconds()
-            if  lastAlertSeconds > 60:   
+            if  lastAlertSeconds > alertCD:   
                 alertDict[alertText] = datetime.now()
                 alertTextandTime = alertText + " at " + (timezone.localize(datetime.now())).strftime('%d/%m/%Y %H:%M:%S')
                 target.send(content=alertTextandTime)
+                return True
             else:
-                print("[ALERT  ] Alert CD {:.2f}s: ".format(60 - lastAlertSeconds) +alertText)
+                #print("[ALERT  ] Alert CD {:.2f}s: ".format(alertCD - lastAlertSeconds) +alertText)
+                return False
         else: 
             alertDict[alertText] = datetime.now()
             alertTextandTime = alertText + " at " + (timezone.localize(datetime.now())).strftime("%d/%m/%Y %H:%M:%S")
             target.send(content=alertTextandTime)
             print("[ALERT  ] Alert sent: "+ alertText)
+            return True
+
+    def alertFile(self, target, image):
+        path = ".\\" + image
+        target.send(file=File(path))

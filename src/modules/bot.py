@@ -114,21 +114,21 @@ class Bot(Configurable):
                 if auto_buff_exp:
                     if last_30m_expbuffed == None:
                         press(self.config['2x EXP Buff'], 1)
-                        time.sleep(0.2)
+                        time.sleep(0.4)
                         press(self.config['Mushroom Buff'], 1)
-                        time.sleep(0.2)
+                        time.sleep(0.4)
                         press(self.config['Additional EXP Buff'], 1)
-                        time.sleep(0.2)
+                        time.sleep(0.4)
                         press(self.config['Gold Pot'], 1)
-                        time.sleep(0.2)
+                        time.sleep(0.4)
                         press(self.config['Wealth Acquisition'], 1)
-                        time.sleep(0.2)
+                        time.sleep(0.4)
                         last_30m_expbuffed = now
                     config.gui.view.monitoringconsole.set_nextexpbuffstat(str(round((expbuff_use_interval*900 - (now - last_30m_expbuffed))))+"s")
-                    if now - last_30m_expbuffed > expbuff_use_interval*900:
+                    if now - last_30m_expbuffed > expbuff_use_interval*900 + 10:
                         press(self.config['2x EXP Buff'], 1)
                         time.sleep(0.2)
-                    if now - last_30m_expbuffed > 1800:
+                    if now - last_30m_expbuffed > 1800 + 10:
                         press(self.config['Mushroom Buff'], 1)
                         time.sleep(0.2)
                         press(self.config['Additional EXP Buff'], 1)
@@ -136,7 +136,7 @@ class Bot(Configurable):
                         press(self.config['Gold Pot'], 1)
                         time.sleep(0.2)
                         last_30m_expbuffed = now
-                    if now - last_30m_expbuffed > 7200:
+                    if now - last_30m_expbuffed > 7200 + 10:
                         press(self.config['Wealth Acquisition'], 1)
                         time.sleep(0.2)
                         last_30m_expbuffed = now
@@ -180,7 +180,7 @@ class Bot(Configurable):
         move(*self.rune_pos).execute()
         adjust = self.command_book['adjust']
         adjust(*self.rune_pos).execute()
-        time.sleep(0.2)
+        time.sleep(0.5)
         print('\nSolving rune:')
         solve_rune_raw(self)
         self.rune_active = False

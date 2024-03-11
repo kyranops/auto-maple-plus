@@ -89,3 +89,6 @@ polo_portal = False
 
 #Especia portal
 especia_portal = False
+
+#Player in town
+in_town = False
