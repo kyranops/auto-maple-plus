@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from src.common import config, settings
 from src.gui import Menu, View, Edit, Settings, Notifer_Settings, Runtime_Flags, Automation_Settings
-
+from src.gui.menu.file import Import_Settings
 
 class GUI:
     DISPLAY_FRAME_RATE = 30
@@ -87,6 +87,22 @@ class GUI:
         layout_thread = threading.Thread(target=self._save_layout)
         layout_thread.daemon = True
         layout_thread.start()
+
+        # Load previously used config
+        print("[~] Attempting to load last used command book and routine")
+        import_root = Import_Settings("CBR")
+        last_cb = import_root.get("last_cb")
+        last_routine = import_root.get("last_routine")
+        if last_cb != None:
+            print()
+            try:
+                config.bot.load_commands(last_cb)
+                if last_routine != None:
+                   config.routine.load(last_routine)
+            except:
+                pass
+        else:
+            print("[!] Last loaded command book not found)")
 
         self.root.mainloop()
 

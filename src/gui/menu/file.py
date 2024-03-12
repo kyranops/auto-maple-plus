@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from src.common import config, utils
-from src.gui.interfaces import MenuBarItem
+from src.gui.interfaces import MenuBarItem, Configurable
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import askyesno
 
@@ -69,6 +69,11 @@ class File(MenuBarItem):
                                     filetypes=[('*.csv', '*.csv')])
         if file_path:
             config.routine.load(file_path)
+            import_root = Import_Settings("CBR")
+            import_root.set("last_routine",file_path)
+            import_root.save_config()
+
+            
 
     @staticmethod
     @utils.run_if_disabled('\n[!] Cannot load command books while Auto Maple is enabled')
@@ -84,10 +89,18 @@ class File(MenuBarItem):
                                     filetypes=[('*.py', '*.py')])
         if file_path:
             config.bot.load_commands(file_path)
-
+            import_root = Import_Settings("CBR")
+            import_root.set("last_cb",file_path)
+            import_root.save_config()
 
 def get_routines_dir():
     target = os.path.join(config.RESOURCES_DIR, 'routines', config.bot.command_book.name)
     if not os.path.exists(target):
         os.makedirs(target)
     return target
+
+class Import_Settings(Configurable):
+    DEFAULT_CONFIG = {
+        'last_cb': None,
+        'last_routine': None
+    }
