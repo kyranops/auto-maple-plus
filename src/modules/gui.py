@@ -103,7 +103,7 @@ class GUI:
                 pass
         else:
             print("[!] Last loaded command book not found)")
-
+            
         self.root.mainloop()
 
     def _display_minimap(self):

@@ -3,6 +3,7 @@ import src.runesolvercore.gdi_capture as gdi_capture
 from interception import press
 import numpy as np
 import cv2 as cv
+import mss
 import src.common.utils as utils
 import src.common.config as config
 
@@ -121,7 +122,7 @@ def locate(self, *color):
     with gdi_capture.CaptureWindow(self.hwnd) as img:
         locations = []
         if img is None:
-            print("MapleStory.exe was not found.")
+            pass
         else:
             # Crop the image to show only the mini-map.
             img_cropped = img[self.left:self.right, self.top:self.bottom]
@@ -185,8 +186,15 @@ def solve_rune_raw(self):
         npcChatKey = self.config['NPC/Gather']
         press(npcChatKey, 1)
         time.sleep(2)
-        img = get_rune_image(gdi_capture.find_window_from_executable_name("MapleStory.exe"))
-        directions = find_arrow_directions(img)
+
+        with config.capture.sct as sct:
+            # The screen part to capture
+            window = config.capture.window
+            output = "assets/rune_capture.png"
+            sct_img = sct.grab(window)
+            mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
+
+        directions = find_arrow_directions(cv.imread(output))
         if len(directions) == 4:
             print(f"Directions: {directions}.")
             for d, _ in directions:

@@ -13,6 +13,7 @@ from src.routine.components import Point
 from src.common import config
 from resources import watcher_scan_table
 import pyautogui
+import mss
 
 # A rune's symbol on the minimap
 RUNE_RANGES = (
@@ -148,11 +149,15 @@ class Watcher:
                             setattr(config,flagname,False)
 
                 #scan for chat
-                CA_TopLeft, CA_TopRight = utils.single_match(frame=frame,template=CHAT_ANCHOR)
-                if CA_TopLeft != None:
 
-                    #step to screenshot, high chance to fail due to pyautogui bug?
-                    pyautogui.screenshot("assets/chat.png",region=(CA_TopLeft[0]+5,CA_TopLeft[1]-60,390,50))
+                try:
+                    game_window = config.capture.window
+                    chatbox_window = {"top": game_window["top"] + game_window["height"] - 125, "left": game_window["left"] + 15, "width": 390, "height":100}
+                    with config.capture.sct as sct:
+                        # The screen part to capture
+                        output = "assets/chat.png"
+                        sct_img = sct.grab(chatbox_window)
+                        mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
                     img = cv2.imread("assets/chat.png")
 
                     #remove specifically achievements mega
@@ -168,8 +173,8 @@ class Watcher:
                         config.chatbox_msg = True
                     else:
                         config.chatbox_msg = False
-                else:
-                    pass
+                except:
+                    print("scanforchat fail")
 
                 #scan for stationary
                 if charLocation_Last == None:
