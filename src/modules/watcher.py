@@ -153,7 +153,7 @@ class Watcher:
                 try:
                     game_window = config.capture.window
                     chatbox_window = {"top": game_window["top"] + game_window["height"] - 125, "left": game_window["left"] + 15, "width": 390, "height":100}
-                    with config.capture.sct as sct:
+                    with mss.mss() as sct:
                         # The screen part to capture
                         output = "assets/chat.png"
                         sct_img = sct.grab(chatbox_window)

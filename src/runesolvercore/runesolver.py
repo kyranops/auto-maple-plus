@@ -187,7 +187,7 @@ def solve_rune_raw(self):
         press(npcChatKey, 1)
         time.sleep(2)
 
-        with config.capture.sct as sct:
+        with mss.mss() as sct:
             # The screen part to capture
             window = config.capture.window
             output = "assets/rune_capture.png"
