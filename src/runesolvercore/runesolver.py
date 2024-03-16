@@ -6,6 +6,7 @@ import cv2 as cv
 import mss
 import src.common.utils as utils
 import src.common.config as config
+import math
 
 # DEFINE CV Variables
 RUNE_BGRA = (255, 102, 221, 255)
@@ -94,9 +95,15 @@ def find_arrow_directions(img, debug=False):
         else:
             return None
 
+    imh, imw, imc = img.shape
+    rune_left_bound = math.trunc((imw - 500)/2)
+    rune_right_bound = rune_left_bound + 500
+
+    print("left: {}, right: {}".format(rune_left_bound,rune_right_bound))
+
     # The rune captcha was observed to appear within this part of the application window on 1366x768 resolution.
-    for r in range(150, 275):
-        for c in range(400, 900):
+    for r in range(150, 300):
+        for c in range(rune_left_bound, rune_right_bound):
             # Arrows start at a red-ish color and are around 15 pixels apart.
             if hue_is_red(r, c) and not near_gradient(r, c):
                 direction = find_direction(r, c)
@@ -185,7 +192,7 @@ def solve_rune_raw(self):
     while attempts <= 3 and config.enabled == True:
         npcChatKey = self.config['NPC/Gather']
         press(npcChatKey, 1)
-        time.sleep(2)
+        time.sleep(0.2)
 
         with mss.mss() as sct:
             # The screen part to capture
@@ -218,4 +225,5 @@ def solve_rune_raw(self):
                 attempts = 0
                 time.sleep(0.5)
                 return False
+        time.sleep(3)
     return False
