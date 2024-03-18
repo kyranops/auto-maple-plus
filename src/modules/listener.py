@@ -8,7 +8,6 @@ from src.common.interfaces import Configurable
 from src.common import config, utils
 from datetime import datetime
 
-
 class Listener(Configurable):
     DEFAULT_CONFIG = {
         'Start/stop': 'f4',
@@ -79,7 +78,9 @@ class Listener(Configurable):
         if not config.enabled:
             Listener.recalibrate_minimap()      # Recalibrate only when being enabled.
 
+
         config.enabled = not config.enabled
+        config.gui.view.monitoringconsole.set_enabledstat(config.enabled)
         utils.print_state()
 
         if config.enabled:

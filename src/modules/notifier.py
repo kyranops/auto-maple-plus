@@ -6,10 +6,12 @@ from datetime import datetime
 import pytz
 from src.gui.notifier_settings.main import NotifSettings
 from src.gui.notifier_settings.notification_settings import NotificationSetting
+from src.gui.automation.main import AutomationParams
 import src.common.config as config
 import pyautogui
 import cv2
 from pathlib import Path
+import src.modules.automation as automation
 
 class Notifier:
     def __init__(self):
@@ -40,12 +42,14 @@ class Notifier:
                         "character_dead",
                         "chatbox_msg",
                         "stuck_in_cs",
+                        "char_in_town",
                         "player_stuck",
                         "especia_portal"
                         ]
 
         while True:
             #try except to prevent crashing when user is editing while trying to load configs
+            #get user settings
             try:
                 suppressAll = NotificationSetting('Notification Settings').get("Suppress_All")
                 alertForBotRunning = NotificationSetting('Notification Settings').get("bot_running_toggle")
@@ -53,6 +57,8 @@ class Notifier:
                     self.watchlist[i] = {"toggle":NotificationSetting('Notification Settings').get(i+"_toggle"),
                                             "msg":NotificationSetting('Notification Settings').get(i+"_notice")
                                             }
+                reviveWhenDead = AutomationParams('Automation Settings').get("revive_when_dead_toggle")
+                pauseInTown = AutomationParams('Automation Settings').get("auto_pause_in_town_toggle")
             except:
                 pass
             
@@ -66,7 +72,11 @@ class Notifier:
                             alertSent = self.alert(config.webhook, user_timezone, self.lastAlertTimeDict, self.watchlist[item]["msg"])
                             if item == "chatbox_msg" and alertSent:
                                     self.alertFile(target=config.webhook, image="assets\chat.png")
-            time.sleep(1)
+                            if item == "character_dead" and reviveWhenDead:
+                                automation.autoRevive()
+                            if item == "char_in_town" and pauseInTown:
+                                config.listener.toggle_enabled()
+            time.sleep(0.5)
     
     def alert(self,target, timezone, alertDict, alertText: str, alertCD = 60):
         """

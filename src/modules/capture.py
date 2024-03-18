@@ -111,6 +111,15 @@ class Capture:
                     if not self.calibrated:
                         break
 
+                    #force recalibrate if moved or window size changed
+                    handle2 = user32.FindWindowW(None, 'MapleStory')
+                    rect2 = wintypes.RECT()
+                    user32.GetWindowRect(handle2, ctypes.pointer(rect2))
+                    rect2 = (rect2.left, rect2.top, rect2.right, rect2.bottom)
+                    if rect2 != rect:
+                        time.sleep(1)
+                        break
+
                     # Take screenshot
                     self.frame = self.screenshot()
                     if self.frame is None:

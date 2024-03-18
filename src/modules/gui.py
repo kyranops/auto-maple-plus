@@ -12,9 +12,11 @@ class GUI:
     DISPLAY_FRAME_RATE = 30
     RESOLUTIONS = {
         'DEFAULT': '800x800',
-        'Edit': '1400x800',
-        'Settings': '800x850',
-        'Monitoring': '450x550'
+        'Edit': '1300x750',
+        'Settings': '750x850',
+        'Notifier': '600x775',
+        'Monitoring': '400x575',
+        'Automation': '400x525'
     }
 
     def __init__(self):

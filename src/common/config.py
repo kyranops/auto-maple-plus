@@ -81,6 +81,9 @@ chatbox_msg = False
 # Inside cashshop for extended period
 stuck_in_cs = False
 
+# Character in town
+char_in_town = False
+
 # Player not moving
 player_stuck = False
 

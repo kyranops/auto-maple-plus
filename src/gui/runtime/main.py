@@ -28,6 +28,7 @@ class Runtime_Flags_Frame(LabelFrame):
         self.player_stuck_flag = tk.StringVar()
         self.polo_portal_flag = tk.StringVar()
         self.especia_portal_flag = tk.StringVar()
+        self.char_in_town_flag = tk.StringVar()
 
         flaglist = ["bot_enabled", 
                     "rune_cd", 
@@ -41,7 +42,8 @@ class Runtime_Flags_Frame(LabelFrame):
                     "chatbox_msg",
                     "stuck_in_cs",
                     "player_stuck",
-                    "especia_portal"
+                    "especia_portal",
+                    "char_in_town"
                     ]
         self.grid_columnconfigure(2, weight=1)
 
@@ -61,6 +63,7 @@ class Runtime_Flags_Frame(LabelFrame):
         self.f11v = tk.Entry(self, textvariable=self.stuck_in_cs_flag, state=tk.DISABLED).grid(row=10, column=2, padx=(0, 5), pady=(5, 0), sticky=tk.EW)
         self.f12v = tk.Entry(self, textvariable=self.player_stuck_flag, state=tk.DISABLED).grid(row=11, column=2, padx=(0, 5), pady=(5, 0), sticky=tk.EW)
         self.f14v = tk.Entry(self, textvariable=self.especia_portal_flag, state=tk.DISABLED).grid(row=12, column=2, padx=(0, 5), pady=(5, 0), sticky=tk.EW)
+        self.f15v = tk.Entry(self, textvariable=self.char_in_town_flag, state=tk.DISABLED).grid(row=13, column=2, padx=(0, 5), pady=(5, 0), sticky=tk.EW)
 
 
     def update_All_Flags(self):
@@ -77,3 +80,4 @@ class Runtime_Flags_Frame(LabelFrame):
         self.stuck_in_cs_flag.set(str(config.stuck_in_cs))
         self.player_stuck_flag.set(str(config.player_stuck))
         self.especia_portal_flag.set(str(config.especia_portal))
+        self.char_in_town_flag.set(str(config.char_in_town))

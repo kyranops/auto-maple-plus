@@ -29,7 +29,7 @@ while not notifier.ready:
 
 watcher.start()
 while not watcher.ready:
-    time.sleep(0.01)
+    time.sleep(0.01)      
 
 listener.start()
 while not listener.ready:

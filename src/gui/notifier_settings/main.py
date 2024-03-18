@@ -48,7 +48,7 @@ class Notification_Target(LabelFrame):
 
 class NotifSettings(Configurable):
     DEFAULT_CONFIG = {
-        'WebhookURL': 'https://discord.com/api/webhooks/931228755005939743/t-ZGoPIGl5l2Ss7a1Lu-8LcVhbG2CN9HwiMRTPRo26kEvuRoEf35Oc61MMHxoakLG_zf',
-        'Timezone': 'NULL'
+        'WebhookURL': 'NULL',
+        'Timezone': 'UTC'
     }
     

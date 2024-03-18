@@ -5,15 +5,15 @@ import time
 from datetime import datetime
 import os
 import cv2
-import pygame
 import threading
 import numpy as np
 import keyboard as kb
 from src.routine.components import Point
 from src.common import config
 from resources import watcher_scan_table
-import pyautogui
 import mss
+from src.gui.automation.main import AutomationParams
+import src.modules.automation as automation
 
 # A rune's symbol on the minimap
 RUNE_RANGES = (
@@ -37,8 +37,8 @@ RUNE_CD1_TEMPLATE = cv2.imread('assets/runeCD.png', 0)
 RUNE_CD2_TEMPLATE = cv2.imread('assets/runeCD2.png', 0)
 
 # EXP Text as Chat Anchor
-CHAT_ANCHOR = cv2.imread('assets/exp.png',0)
-
+LOGIN_SCREEN = cv2.imread('assets/Login.png',0)
+SECONDPW_SCREEN = cv2.imread('assets/2ndpwKB.png',0)
 
 def get_alert_path(name):
     return os.path.join(Watcher.ALERTS_DIR, f'{name}.mp3')
@@ -73,11 +73,12 @@ class Watcher:
         charLocation_Last = None
 
         while True:
+            frame = config.capture.frame #entire screen
+            height, width, _ = frame.shape
+            minimap = config.capture.minimap['minimap'] #minimap only
+
+            #scans in this section only activate if bot is enabled
             if config.enabled:
-                frame = config.capture.frame #entire screen
-                height, width, _ = frame.shape
-                minimap = config.capture.minimap['minimap'] #minimap only
-                
                 # Check for rune CD
                 runeCD1 = utils.multi_match(frame, RUNE_CD1_TEMPLATE, threshold=0.85)
                 runeCD2 = utils.multi_match(frame, RUNE_CD2_TEMPLATE, threshold=0.85)
@@ -149,7 +150,6 @@ class Watcher:
                             setattr(config,flagname,False)
 
                 #scan for chat
-
                 try:
                     game_window = config.capture.window
                     chatbox_window = {"top": game_window["top"] + game_window["height"] - 125, "left": game_window["left"] + 15, "width": 390, "height":100}
@@ -186,9 +186,29 @@ class Watcher:
                     setattr(config,"player_stuck",False)
                 if config.player_pos == charLocation_Last and (datetime.now()-charLocation_Time).total_seconds() > 15:
                     setattr(config,"player_stuck",True)
+            
 
+            try:
                 config.gui.runtime_console.runtimeFlags.update_All_Flags()
-            time.sleep(0.05)
+            except:
+                pass
+
+            #scans below here activate regardless of bot enabled status
+            #scan for login screens
+            loginscreen = utils.multi_match(frame, LOGIN_SCREEN, 0.7)
+            if loginscreen != []:
+                autoLoginToggle = AutomationParams('Automation Settings').get("auto_login2FA_toggle")
+                if autoLoginToggle:
+                    automation.autoLogin()
+            
+            #scan for secondPW screens
+            secondPWscreen = utils.multi_match(frame, SECONDPW_SCREEN, 0.8)
+            if secondPWscreen != []:
+                autosecondaryToggle = AutomationParams('Automation Settings').get("auto_2ndPW_toggle")
+                if autosecondaryToggle:
+                    automation.auto2ndPW()
+
+            time.sleep(0.1)
 
 
     def _alert(self, name, volume=0.75):

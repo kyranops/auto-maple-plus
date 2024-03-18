@@ -26,6 +26,8 @@ class Notification_Settings(LabelFrame):
         self.chatToggle = tk.BooleanVar(value=self.notification_setting_root.get("chatbox_msg_toggle"))
         self.stuckInCSNotice = tk.StringVar(value=self.notification_setting_root.get("stuck_in_cs_notice"))
         self.stuckInCSToggle = tk.BooleanVar(value=self.notification_setting_root.get("stuck_in_cs_toggle"))
+        self.charInTownNotice = tk.StringVar(value=self.notification_setting_root.get("char_in_town_notice"))
+        self.charInTownToggle = tk.BooleanVar(value=self.notification_setting_root.get("char_in_town_toggle"))
         self.playerStuckNotice = tk.StringVar(value=self.notification_setting_root.get("player_stuck_notice"))
         self.playerStuckToggle = tk.BooleanVar(value=self.notification_setting_root.get("player_stuck_toggle"))
         self.playerEspeciaNotice = tk.StringVar(value=self.notification_setting_root.get("especia_portal_notice"))
@@ -108,7 +110,7 @@ class Notification_Settings(LabelFrame):
         ).grid(row=7, column=0, sticky=tk.W, padx=5, pady=5)
         n6=tk.Entry(self, textvariable=self.deadNotice)
         n6.grid(row=7, column=1, sticky=tk.NSEW, padx=5, pady=5)
-        n5.bind("<KeyRelease>",self._on_change)
+        n6.bind("<KeyRelease>",self._on_change)
 
         tk.Checkbutton(
             self,
@@ -146,9 +148,19 @@ class Notification_Settings(LabelFrame):
             text="Especia Portal",
             command=self._on_change
         ).grid(row=11, column=0, sticky=tk.W, padx=5, pady=5)
-        n9=tk.Entry(self, textvariable=self.playerEspeciaNotice)
-        n9.grid(row=11, column=1, sticky=tk.NSEW, padx=5, pady=5)
-        n9.bind("<KeyRelease>",self._on_change)
+        n10=tk.Entry(self, textvariable=self.playerEspeciaNotice)
+        n10.grid(row=11, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n10.bind("<KeyRelease>",self._on_change)
+
+        tk.Checkbutton(
+            self,
+            variable=self.charInTownToggle,
+            text="Character in Town",
+            command=self._on_change
+        ).grid(row=12, column=0, sticky=tk.W, padx=5, pady=5)
+        n11=tk.Entry(self, textvariable=self.charInTownNotice)
+        n11.grid(row=12, column=1, sticky=tk.NSEW, padx=5, pady=5)
+        n11.bind("<KeyRelease>",self._on_change)
 
         muteAll_check = tk.Checkbutton(
             self,
@@ -181,6 +193,8 @@ class Notification_Settings(LabelFrame):
         self.notification_setting_root.set('player_stuck_toggle', self.playerStuckToggle.get())    
         self.notification_setting_root.set('especia_portal_notice', self.playerEspeciaNotice.get())
         self.notification_setting_root.set('especia_portal_toggle', self.playerEspeciaToggle.get())
+        self.notification_setting_root.set('char_in_town_notice', self.playerEspeciaNotice.get())
+        self.notification_setting_root.set('char_in_town_toggle', self.playerEspeciaToggle.get())
         self.notification_setting_root.set('Suppress_All', self.notif_suppression.get())    
         self.notification_setting_root.save_config()
 
@@ -205,6 +219,8 @@ class NotificationSetting(Configurable):
         'chatbox_msg_toggle': False,
         'stuck_in_cs_notice': 'NULL',
         'stuck_in_cs_toggle': False,
+        'char_in_town_notice': 'NULL',
+        'char_in_town_toggle': False,
         'player_stuck_notice': 'NULL',
         'player_stuck_toggle': False,
         'especia_portal_notice': 'NULL',

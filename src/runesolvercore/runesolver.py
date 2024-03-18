@@ -95,7 +95,7 @@ def find_arrow_directions(img, debug=False):
         else:
             return None
 
-    imh, imw, imc = img.shape
+    _, imw, _ = img.shape
     rune_left_bound = math.trunc((imw - 500)/2)
     rune_right_bound = rune_left_bound + 500
 
