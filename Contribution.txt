@@ -1,0 +1,9 @@
+hey man.
+i looked at your past project on maple, and currently your working on Jeffery's fork on Auto maple.
+I would like to share you my fork of it, based on Sean's version (which is based on Jeffery's but it's being worked at more). Saw that you're recently implementing interception as well. But i'm using pyinterception (interception-python).
+
+I know it sounds kinda sus, but if you would like a copy of my fork, do let me know. I just wouldn't want people to take advantage of this and simply abuse it. 
+
+you can add me on discord @ austinjklim. 
+
+Bootes player here. 
